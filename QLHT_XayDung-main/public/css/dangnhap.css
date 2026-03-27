@@ -1,0 +1,230 @@
+/* --- CSS DÙNG CHUNG CHO CẢ ĐĂNG NHẬP VÀ ĐĂNG KÝ --- */
+:root {
+  --xanh-la: #007700;
+  --xanh-duong: #000077;
+  --trang: #ffffff;
+  --xam-nhe: #f4f7f6;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+/* Wrapper & Background */
+.login-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.login-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.login-background img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 119, 0.5),
+    rgba(0, 119, 0, 0.5)
+  );
+  z-index: 2;
+}
+
+/* Container & Card */
+.login-container {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 450px;
+  padding: 20px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--trang);
+}
+.login-header img {
+  height: 70px;
+  margin-bottom: 10px;
+}
+.login-header h1 {
+  font-size: 1.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.96);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  border-top: 6px solid var(--xanh-la);
+}
+
+.login-card h2 {
+  color: var(--xanh-duong);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Input & Buttons */
+.input-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+}
+.input-group input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+.input-group input:focus {
+  border-color: var(--xanh-la);
+} /* Container chứa input và icon */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Chỉnh ô input để chừa chỗ cho icon bên phải */
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 40px !important; /* Không cho chữ đè lên icon */
+}
+
+/* Định vị icon con mắt */
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  transition: 0.3s;
+  z-index: 10;
+}
+
+.toggle-password:hover {
+  color: var(--xanh-la);
+}
+/* Cấu trúc cho nhóm mật khẩu */
+.password-group {
+  margin-bottom: 10px !important; /* Giảm margin để sát nút bấm hơn */
+}
+
+.forgot-pass-wrapper {
+  text-align: right; /* Đẩy chữ sang bên phải */
+  margin-top: 5px;
+}
+
+.forgot-link {
+  color: var(--xanh-duong);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.forgot-link:hover {
+  color: var(--xanh-la);
+  text-decoration: underline;
+}
+/* Nút đăng nhập */
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  background: var(--xanh-duong);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px; /* Tạo khoảng cách với link quên mk */
+}
+.btn-login:hover {
+  background: var(--xanh-la);
+  transform: translateY(-2px);
+}
+
+/* Tối ưu hóa lại khung Error để khớp với file CSS */
+.msg-box {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  text-align: center;
+  font-weight: 500;
+}
+.error-msg {
+  background: #fdecea;
+  color: #d32f2f;
+  border: 1px solid #f8d7da;
+}
+.success-msg {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+/* Chỉnh lại footer của form */
+.form-footer {
+  display: flex;
+  justify-content: center; /* Căn giữa nút quay lại */
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.form-footer a {
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: 0.3s;
+  color: var(--xanh-duong);
+  font-weight: bold;
+}
+
+.form-footer a:hover {
+  color: var(--xanh-la);
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

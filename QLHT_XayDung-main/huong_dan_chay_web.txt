@@ -1,0 +1,18 @@
+1. Mở xampp-> Vào phpAdmin-> Tạo database mới có tên là qlht_xaydung_vlute
+
+
+2. Vào thư mục database lấy file qlht_xaydung_vlute.sql import vào 
+
+
+3. Tạo file .env ( QLHT_XAYDUNG/.env ) -> Dán code vào file .env 
+*-----
+                DB_CONNECTION=mysql
+                DB_HOST=localhost
+                DB_PORT=3306
+                DB_NAME=qlht_xaydung_vlute
+                DB_USER=root          <-- Thường là root
+                DB_PASS=              <-- Mật khẩu XAMPP (thường để trống)
+-----*
+
+
+4. Dán http://localhost/QLHT_XayDungvào URL để chạy web

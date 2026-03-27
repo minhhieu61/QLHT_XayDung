@@ -1,0 +1,123 @@
+:root {
+    --primary-blue: #000077; /* Màu xanh VLUTE */
+    --light-bg: #f4f7fe;
+    --white: #ffffff;
+    --text-main: #2c3e50;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.duan-container {
+    padding: 30px;
+    background-color: var(--light-bg);
+    min-height: calc(100vh - 60px);
+}
+
+/* Header tiêu đề trang */
+.header-top-ql {
+    margin-bottom: 25px;
+}
+
+.header-title-ql h1 {
+    color: var(--primary-blue);
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+/* Thanh hành động (Tìm kiếm & Nút thêm) */
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-box-custom {
+    background: var(--white);
+    padding: 10px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 400px;
+    box-shadow: var(--shadow);
+}
+
+.search-box-custom input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.btn-add-project {
+    background: var(--primary-blue);
+    color: var(--white) !important;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-add-project:hover {
+    background: #000055;
+    transform: translateY(-2px);
+}
+
+/* Bảng dữ liệu */
+.table-card-custom {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.main-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.main-table th {
+    text-align: left;
+    padding: 15px;
+    color: var(--primary-blue);
+    border-bottom: 2px solid #f1f5f9;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.main-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+/* Format nội dung trong ô */
+.project-cell { display: flex; align-items: center; gap: 12px; }
+.project-icon-box {
+    width: 40px; height: 40px;
+    background: #eef2ff;
+    color: var(--primary-blue);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.text-bold { display: block; font-weight: 700; color: var(--text-main); }
+.text-sub { display: block; font-size: 0.8rem; color: #94a3b8; margin-top: 2px; }
+
+/* Trạng thái */
+.badge-working {
+    background: #ecfdf5;
+    color: #10b981;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}

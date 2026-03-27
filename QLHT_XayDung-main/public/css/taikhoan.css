@@ -1,0 +1,196 @@
+/* --- Biến màu hệ thống --- */
+:root {
+    --primary-blue: #000077;
+    --primary-green: #007700;
+    --white: #ffffff;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 5px 15px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+    --transition: all 0.3s ease;
+}
+
+/* --- Container chung --- */
+.account-container {
+    animation: fadeIn 0.6s ease-out;
+    padding: 10px;
+}
+
+/* --- Header --- */
+.vattu-header-top {
+    margin-bottom: 25px;
+}
+
+.header-title-ql h1 {
+    color: var(--primary-blue);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.header-title-ql p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* --- Grid Layout: Chia 2 cột --- */
+.account-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+/* --- Card Style chung --- */
+.account-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+/* --- Cột trái: Profile Summary --- */
+.profile-sidebar {
+    text-align: center;
+    position: sticky;
+    top: 20px;
+}
+
+.profile-usertitle {
+    margin-top: 10px;
+}
+
+.profile-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 5px;
+}
+
+.profile-role {
+    color: #888;
+    font-size: 0.85rem;
+    background: #f0f2f5;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 15px;
+}
+
+.profile-status {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.dot.green {
+    width: 10px;
+    height: 10px;
+    background: var(--primary-green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--primary-green);
+}
+
+/* --- Cột phải: Profile Content/Form --- */
+.form-section {
+    margin-bottom: 35px;
+}
+
+.form-section h3 {
+    font-size: 1.1rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid #f0f2f5;
+    padding-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #333;
+    transition: var(--transition);
+    background: #fafafa;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-blue);
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0,0,119,0.05);
+}
+
+.form-group input[readonly] {
+    background: #f1f1f1;
+    cursor: not-allowed;
+    color: #888;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* --- Nút Lưu --- */
+.btn-save {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-save:hover {
+    background: #0000aa;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,119,0.2);
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+    .account-grid {
+        grid-template-columns: 1fr;
+    }
+    .profile-sidebar {
+        position: static;
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}

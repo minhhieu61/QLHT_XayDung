@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Nếu dự án nằm trong thư mục htdocs/ql_xaydung/ thì sửa thành /ql_xaydung/
+# Nếu nằm ngay ngoài htdocs thì để /
+RewriteBase /
+
+# Nếu là tệp tin hoặc thư mục thực tế thì bỏ qua, không redirect vào index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Các trường hợp còn lại đều đẩy về index.php
+RewriteRule ^ index.php [L]

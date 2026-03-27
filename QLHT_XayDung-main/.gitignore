@@ -1,0 +1,17 @@
+# Chặn thư mục thư viện nặng (Quan trọng nhất)
+/vendor/
+/node_modules/
+
+# Chặn file cấu hình cá nhân và mật khẩu
+.env
+.env.local
+
+# Chặn các file tạm của hệ thống và IDE
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Chặn các file log và cache của framework
+/storage/*.log
+/temp/

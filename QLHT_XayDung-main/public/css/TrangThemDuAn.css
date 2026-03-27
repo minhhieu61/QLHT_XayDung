@@ -1,0 +1,115 @@
+/* Sử dụng lại các biến từ file trên để đồng bộ */
+
+.form-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: var(--shadow);
+    max-width: 900px;
+    margin: 0 auto;
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-header {
+    border-left: 5px solid var(--primary-blue);
+    padding-left: 20px;
+    margin-bottom: 35px;
+}
+
+.form-header h2 {
+    color: var(--primary-blue);
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+/* Grid Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.full-width { grid-column: span 2; }
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.form-group input, 
+.form-group textarea {
+    width: 100%;
+    padding: 12px 18px;
+    border: 1.5px solid #edf2f9;
+    border-radius: 12px;
+    background: #fcfdfe;
+    font-size: 0.95rem;
+    transition: 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-blue);
+    background: var(--white);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 0, 119, 0.05);
+}
+
+/* Nút bấm cuối trang */
+.form-footer {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.btn-submit {
+    background: var(--primary-blue);
+    color: white;
+    padding: 13px 30px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-cancel {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 13px 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    text-align: center;
+}
+
+.btn-submit:hover { background: #000055; transform: translateY(-2px); }
+.btn-cancel:hover { background: #e2e8f0; }
+/* Làm mờ nhẹ các ô readonly để phân biệt với trang thêm mới */
+.form-group input[readonly], 
+.form-group textarea[readonly] {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #475569;
+    cursor: default;
+}
+
+/* Nút quay lại đặc biệt cho trang chi tiết */
+.btn-cancel i {
+    margin-right: 8px;
+}
+
+/* Màu xanh lá cho nút chỉnh sửa nếu bạn muốn dùng */
+.btn-edit-alt {
+    background: var(--primary-green) !important;
+}

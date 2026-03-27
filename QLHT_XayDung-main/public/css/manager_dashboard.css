@@ -1,0 +1,317 @@
+/* --- BIẾN MÀU ĐỒNG BỘ --- */
+:root {
+  --primary: #000077; /* Xanh dương chủ đạo (VLUTE) */
+  --secondary: #007700; /* Xanh lá chủ đạo (Manager/Success) */
+  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --trang: #ffffff;
+}
+
+/* --- RESET & LAYOUT CƠ BẢN --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+body {
+  background: url("../img/anhmoi2.jpg") no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 0 0; /* Khớp với trang User */
+  margin: 0;
+}
+
+/* --- KHUNG BỌC KÍNH (GIỐNG HỆT USER) --- */
+.glass-wrapper {
+  width: 95%;
+  height: 90vh;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  display: flex;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* --- SIDEBAR CÁCH TÂN --- */
+.side-panel {
+  width: 280px;
+  background: rgba(0, 0, 119, 0.05);
+  display: flex;
+  flex-direction: column;
+  padding: 30px 20px;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.brand img {
+  width: 45px;
+  margin-right: 12px;
+}
+.brand h3 {
+  color: var(--primary);
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.nav-menu {
+  flex: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  color: #555;
+  text-decoration: none;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.nav-link i {
+  margin-right: 15px;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: var(--primary);
+  color: white !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 119, 0.2);
+}
+
+/* --- USER PROFILE TRONG SIDEBAR --- */
+.user-profile {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-top: auto;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--secondary);
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.info {
+  flex: 1;
+  margin-left: 12px;
+}
+.info span {
+  display: block;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--primary);
+}
+
+.info small.role-manager {
+  color: #d97706;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.logout-icon {
+  color: #ff4d4d;
+  transition: 0.3s;
+  text-decoration: none;
+}
+.logout-icon:hover {
+  transform: scale(1.2);
+}
+
+/* --- MAIN CONTENT AREA (FIXED DƯ VIỀN) --- */
+.content-area {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Quan trọng để không bị đẩy bung khung */
+}
+
+.main-header {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-title h1 {
+  color: var(--primary);
+  font-size: 1.8rem;
+}
+.header-title p {
+  color: var(--secondary);
+  font-weight: 500;
+}
+
+/* Dashboard Grid (3 cột thống kê) */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.stat-card {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.stat-card:hover {
+  transform: translateY(-10px);
+}
+.stat-card i {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+/* Màu sắc icon đồng bộ */
+.stat-card.warning i {
+  color: #d97706;
+}
+.stat-card.info i {
+  color: #0284c7;
+}
+.stat-card.success i {
+  color: var(--secondary);
+}
+
+.stat-card h4 {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+.stat-card .number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #333;
+}
+
+/* --- PANEL LAYOUT (DÀNH CHO BẢNG & THÔNG BÁO) --- */
+.manager-content-layout {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  gap: 25px;
+  width: 100%;
+}
+
+.panel {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.panel h3 {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Bảng tùy chỉnh */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.custom-table th {
+  text-align: left;
+  padding: 12px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  border-bottom: 2px solid #f1f5f9;
+}
+.custom-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+}
+
+/* --- FOOTER (GIỐNG HỆT USER) --- */
+#chan-trang {
+  background: var(--secondary);
+  color: #ffffff;
+  text-align: center;
+  padding: 30px 20px;
+  width: 100%;
+  margin-top: auto;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+#chan-trang strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.slogan-footer {
+  color: #ffffff !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
+  letter-spacing: 3px;
+  margin-top: 15px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  display: inline-block;
+  padding-top: 10px;
+}
+/* --- CSS CHO ICON TRONG SIDEBAR --- */
+
+/* 1. Định dạng chung cho tất cả icon */
+.side-panel .nav-menu .nav-link i {
+  width: 20px; /* Độ rộng cố định để icon thẳng hàng */
+  margin-right: 10px; /* Khoảng cách với chữ */
+  font-size: 16px; /* Kích thước icon */
+  color: #7f8c8d; /* Màu mặc định (Xám) */
+  transition: all 0.3s ease; /* Hiệu ứng mượt mà */
+}
+
+/* 2. Màu sắc icon khi Active (Trang hiện tại) */
+.side-panel .nav-menu .nav-link.active i {
+  color: #3498db; /* Màu Xanh dương khi Active */
+}
+
+/* 3. Màu sắc icon khi Hover (Di chuột qua) */
+.side-panel .nav-menu .nav-link:hover i {
+  color: #2c3e50; /* Màu tối hơn khi di chuột */
+}
