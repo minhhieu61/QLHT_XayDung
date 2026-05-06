@@ -1,65 +1,114 @@
+<?php
+/** @var mysqli $conn */
+include 'ketnoi.php';
+
+// 1. Lấy từ khóa tìm kiếm từ URL
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+
+// 2. Cập nhật truy vấn SQL để lọc theo tên công ty hoặc mã số thầu
+$sql = "SELECT * FROM chuthau 
+        WHERE ten_don_vi LIKE '%$search%' 
+        OR ma_ct LIKE '%$search%' 
+        OR nguoi_dai_dien LIKE '%$search%'
+        ORDER BY id DESC";
+        
+$result = mysqli_query($conn, $sql);
+?>
+
 <link rel="stylesheet" href="css/danhsachchuthau.css">
 
 <div class="chuthau-container">
-    <header class="vattu-header-top">
-        <div class="table-title">
-            <h2><i class="fas fa-handshake"></i> QUẢN LÝ DANH SÁCH CHỦ THẦU</h2>
-            <p>Hệ thống quản lý đối tác xây dựng và nhà thầu phụ</p>
-        </div>
-    </header>
+    <div class="chuthau-header">
+        <!-- FORM TÌM KIẾM -->
+        <form method="GET" action="trangchu.php" class="search-box">
+            <input type="hidden" name="p" value="danhsachchuthau">
+            <i class="fas fa-search"></i>
+            <input type="text" name="search" id="searchInput" 
+                   placeholder="Tìm tên công ty, mã số thầu..." 
+                   value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit" style="display:none;">Tìm</button>
+        </form>
+        
+        <a href="trangchu.php?p=themchuthau" class="btn-add-ct" style="text-decoration: none;">
+            <i class="fas fa-plus-circle"></i> THÊM CHỦ THẦU
+        </a>
+    </div>
 
-    <div class="table-card">
-        <div class="table-actions">
-            <form action="" method="GET" class="search-form">
-                <i class="fas fa-search" style="color: #000077;"></i>
-                <input type="text" name="search" placeholder="Tìm tên công ty, mã số thuế..." 
-                       value="<?php echo $_GET['search'] ?? ''; ?>">
-            </form>
-            
-            <button class="btn-add-new">
-                <i class="fas fa-plus-circle"></i> Thêm chủ thầu
-            </button>
-        </div>
-
-        <table class="main-table">
-            <thead>
-                <tr>
-                    <th style="width: 25%;">Đơn vị thầu</th>
-                    <th style="width: 20%;">Người đại diện</th>
-                    <th style="width: 20%;">Liên hệ</th>
-                    <th style="width: 15%;">Tổng vốn</th>
-                    <th style="width: 12%;">Trạng thái</th>
-                    <th style="width: 8%;">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
+    <table class="chuthau-table" id="chuthauTable">
+        <thead>
+            <tr>
+                <th>ĐƠN VỊ THẦU</th>
+                <th>NGƯỜI ĐẠI DIỆN</th>
+                <th>LIÊN HỆ</th>
+                <th>TỔNG VỐN</th>
+                <th>TRẠNG THÁI</th>
+                <th>THAO TÁC</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (mysqli_num_rows($result) > 0): ?>
+                <?php while($row = mysqli_fetch_assoc($result)): ?>
                 <tr>
                     <td>
-                        <div class="user-info">
-                            <div class="user-avatar cdt">CT</div>
-                            <div>
-                                <span class="entity-name">Công ty Xây dựng Delta</span>
-                                <span class="entity-code">Mã: #CT042</span>
+                        <div class="unit-info">
+                            <div class="unit-logo">CT</div>
+                            <div class="unit-text">
+                                <div class="unit-name"><?php echo $row['ten_don_vi']; ?></div>
+                                <div class="unit-id">Mã: <?php echo $row['ma_ct']; ?></div>
                             </div>
                         </div>
                     </td>
-                    <td><b>Nguyễn Văn A</b></td>
+                    <td class="bold-text"><?php echo $row['nguoi_dai_dien']; ?></td>
                     <td>
                         <div class="contact-info">
-                            <span><i class="fas fa-phone-alt"></i> 0270.3822.111</span>
-                            <small>delta@build.vn</small>
+                            <div class="phone"><i class="fas fa-phone-alt"></i> <?php echo $row['so_dien_thoai']; ?></div>
+                            <div class="email-text"><?php echo $row['email']; ?></div>
                         </div>
                     </td>
-                    <td style="font-weight: 800; color: #000077;">5,200,000,000</td>
-                    <td><span class="status-tag working">Đang hợp tác</span></td>
+                    <td class="price-text"><?php echo number_format($row['tong_von'], 0, ',', '.'); ?></td>
                     <td>
-                        <div class="action-btns">
-                            <button class="btn-action edit" title="Sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action delete" title="Xóa"><i class="fas fa-trash"></i></button>
+                        <?php 
+                            $status_class = ($row['trang_thai'] == 'Đang hợp tác') ? 'status-active' : 'status-empty';
+                        ?>
+                        <span class="status-badge <?php echo $status_class; ?>">
+                            <?php echo $row['trang_thai']; ?>
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="trangchu.php?p=suachuthau&id=<?php echo $row['id']; ?>" class="btn-edit"><i class="fas fa-edit"></i></a>
+                            <button class="btn-delete" onclick="confirmDelete(<?php echo $row['id']; ?>)"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>
                 </tr>
-            </tbody>
-        </table>
-    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr><td colspan="6" style="text-align:center; padding: 20px;">Không tìm thấy chủ thầu nào khớp với từ khóa.</td></tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
 </div>
+
+<!-- JAVASCRIPT TÌM KIẾM NHANH (LIVE SEARCH) -->
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#chuthauTable tbody tr');
+
+    rows.forEach(row => {
+        // Lấy toàn bộ văn bản trong dòng (tên, mã, người đại diện)
+        let text = row.innerText.toLowerCase();
+        if (text.includes(filter)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+function confirmDelete(id) {
+    if(confirm('Bạn có chắc chắn muốn xóa chủ thầu này?')) {
+        window.location.href = 'xuly_xoachuthau.php?id=' + id;
+    }
+}
+</script>

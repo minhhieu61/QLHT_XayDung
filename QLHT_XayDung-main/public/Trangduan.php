@@ -1,66 +1,98 @@
+<?php
+include 'ketnoi.php';
+/** @var mysqli $conn */
+
+// Lấy từ khóa tìm kiếm từ URL (nếu có)
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+
+// Truy vấn có điều kiện lọc
+$sql = "SELECT id, ma_da, ten_du_an, chu_dau_tu, vi_tri, ngay_tao 
+        FROM duan 
+        WHERE ma_da LIKE '%$search%' 
+           OR ten_du_an LIKE '%$search%' 
+           OR chu_dau_tu LIKE '%$search%' 
+           OR vi_tri LIKE '%$search%'
+        ORDER BY ngay_tao DESC";
+
+$result = mysqli_query($conn, $sql);
+?>
+
 <link rel="stylesheet" href="css/danhsachduan.css">
 
 <div class="duan-container">
     <div class="header-top-ql">
         <div class="header-title-ql">
-            <h1><i class="fas fa-layer-group"></i> HỆ THỐNG QUẢN LÝ DỰ ÁN</h1>
-            <p>Phân loại và theo dõi tiến độ các công trình xây dựng</p>
+            <h1><i class="fas fa-layer-group"></i> QUẢN LÝ DỰ ÁN</h1>
+            <p>Tìm kiếm và theo dõi các dự án hệ thống VLUTE</p>
         </div>
     </div>
 
     <div class="action-bar">
-        <div class="search-box-custom">
+        <!-- Form tìm kiếm -->
+        <form method="GET" action="trangchu.php" class="search-box-custom">
+            <input type="hidden" name="p" value="danhsachduan">
             <i class="fas fa-search" style="color: #ccc;"></i>
-            <input type="text" placeholder="Tìm tên dự án, đơn vị thi công...">
-        </div>
+            <input type="text" name="search" id="searchInput" 
+                   placeholder="Tìm mã, tên dự án, vị trí..." 
+                   value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit" style="display:none;">Tìm</button>
+        </form>
         
-        <a href="trangchu.php?p=themduan" class="btn-add-project" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+        <a href="trangchu.php?p=themduan" class="btn-add-project" style="text-decoration: none;">
             <i class="fas fa-plus-circle"></i> Thêm dự án
         </a>
     </div>
 
     <div class="table-card-custom">
-        <table class="main-table">
+        <table class="table-custom" id="projectTable">
             <thead>
                 <tr>
-                    <th style="width: 30%;">Thông tin dự án</th>
-                    <th style="width: 25%;">Chủ đầu tư</th>
-                    <th style="width: 25%;">Nhà thầu xây dựng</th>
-                    <th style="width: 12%;">Trạng thái</th>
-                    <th style="width: 8%;">Thao tác</th>
+                    <th>Mã dự án</th>
+                    <th>Tên dự án</th>
+                    <th>Chủ đầu tư</th>
+                    <th>Vị trí</th>
+                    <th>Ngày tạo</th>
+                    <th style="text-align:center;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
+                <?php
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                ?>
                 <tr>
-                    <td>
-                        <div class="project-cell">
-                            <div class="project-icon-box"><i class="fas fa-building"></i></div>
-                            <div>
-                                <span class="text-bold">Xây dựng Nhà học C1 - VLUTE</span>
-                                <span class="text-sub">Mã số: #DA-C1-2026</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="text-bold">Ban Quản lý VLUTE</span>
-                        <span class="text-sub"><i class="fas fa-user-tie"></i> ThS. Nguyễn Văn A</span>
-                    </td>
-                    <td>
-                        <span class="text-bold">Công ty Xây dựng Delta</span>
-                        <span class="text-sub"><i class="fas fa-hard-hat"></i> Đội thi công số 4</span>
-                    </td>
-                    <td><span class="badge-working">Đang thực hiện</span></td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-circle btn-edit" title="Chỉnh sửa"><i class="fas fa-pen"></i></button>
-                            <button class="btn-circle btn-del" title="Xóa"><i class="fas fa-trash"></i></button>
-                            <a href="trangchu.php?p=chitietduan&id=1" class="btn-circle btn-view" title="Xem chi tiết">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
+                    <td><strong><?php echo $row['ma_da']; ?></strong></td>
+                    <td><?php echo $row['ten_du_an']; ?></td>
+                    <td><?php echo $row['chu_dau_tu']; ?></td>
+                    <td><i class="fas fa-map-marker-alt"></i> <?php echo $row['vi_tri']; ?></td>
+                    <td><?php echo date('d/m/Y', strtotime($row['ngay_tao'])); ?></td>
+                    <td style="text-align:center;">
+                        <a href="trangchu.php?p=chitietduan&id=<?php echo $row['id']; ?>" class="btn-edit"><i class="fas fa-edit"></i></a>
+                        <a href="xoaduan.php?id=<?php echo $row['id']; ?>" onclick="return confirm('Xóa dự án này?')" class="btn-delete"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
+                <?php 
+                    } 
+                } else {
+                    echo "<tr><td colspan='6' style='text-align:center; padding: 20px;'>Không tìm thấy dự án nào khớp với từ khóa.</td></tr>";
+                }
+                ?>
             </tbody>
         </table>
     </div>
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('#projectTable tbody tr');
+
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        </script>
 </div>

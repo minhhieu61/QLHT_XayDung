@@ -1,115 +1,137 @@
-/* Sử dụng lại các biến từ file trên để đồng bộ */
-
-.form-card {
-    background: var(--white);
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: var(--shadow);
-    max-width: 900px;
-    margin: 0 auto;
-    animation: slideUp 0.4s ease-out;
+/* --- TỔNG THỂ CONTAINER --- */
+.duan-container {
+    padding: 30px;
+    background-color: #f8fafc;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Căn giữa form theo chiều ngang */
 }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.form-header {
-    border-left: 5px solid var(--primary-blue);
-    padding-left: 20px;
-    margin-bottom: 35px;
-}
-
-.form-header h2 {
-    color: var(--primary-blue);
-    font-size: 1.5rem;
-    font-weight: 800;
-}
-
-/* Grid Layout */
+/* --- FORM CARD --- */
 .form-grid {
+    background: white;
+    width: 100%;
+    max-width: 700px; /* Độ rộng vừa phải cho form nhập liệu */
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    
+    /* Sử dụng Grid để chia cột */
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr; /* Chia làm 2 cột */
     gap: 25px;
 }
 
-.full-width { grid-column: span 2; }
+/* --- NHÓM NHẬP LIỆU (INPUT GROUP) --- */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
-.form-group label {
-    display: block;
+/* Cho phép các ô quan trọng (Tên dự án, Vị trí) trải dài 2 cột */
+.input-group:nth-child(2),
+.input-group:nth-child(4) {
+    grid-column: span 2;
+}
+
+.input-group label {
+    font-size: 0.9rem;
     font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 10px;
+    color: #000077; /* Màu xanh đậm thương hiệu */
+    margin-left: 2px;
+}
+
+.input-group input {
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fcfcfc;
+}
+
+.input-group input:focus {
+    border-color: #000077;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 0, 119, 0.1);
+    outline: none;
+}
+
+.input-group input::placeholder {
+    color: #94a3b8;
     font-size: 0.9rem;
 }
 
-.form-group input, 
-.form-group textarea {
-    width: 100%;
-    padding: 12px 18px;
-    border: 1.5px solid #edf2f9;
-    border-radius: 12px;
-    background: #fcfdfe;
-    font-size: 0.95rem;
-    transition: 0.3s;
-}
-
-.form-group input:focus {
-    border-color: var(--primary-blue);
-    background: var(--white);
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(0, 0, 119, 0.05);
-}
-
-/* Nút bấm cuối trang */
-.form-footer {
-    margin-top: 35px;
+/* --- KHU VỰC NÚT BẤM (FORM ACTIONS) --- */
+.form-actions {
+    grid-column: span 2; /* Trải dài hết hàng cuối */
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
     padding-top: 25px;
     border-top: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
 }
 
-.btn-submit {
-    background: var(--primary-blue);
+.btn-save {
+    background-color: #000077;
     color: white;
-    padding: 13px 30px;
-    border-radius: 12px;
-    font-weight: 700;
     border: none;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 119, 0.15);
+}
+
+.btn-save:hover {
+    background-color: #000044;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 119, 0.25);
 }
 
 .btn-cancel {
-    background: #f1f5f9;
-    color: #64748b;
-    padding: 13px 30px;
-    border-radius: 12px;
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 12px 35px;
+    border-radius: 10px;
     text-decoration: none;
     font-weight: 700;
-    text-align: center;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
 }
 
-.btn-submit:hover { background: #000055; transform: translateY(-2px); }
-.btn-cancel:hover { background: #e2e8f0; }
-/* Làm mờ nhẹ các ô readonly để phân biệt với trang thêm mới */
-.form-group input[readonly], 
-.form-group textarea[readonly] {
-    background-color: #f8fafc;
-    border-color: #e2e8f0;
-    color: #475569;
-    cursor: default;
+.btn-cancel:hover {
+    background-color: #e2e8f0;
+    color: #1e293b;
 }
 
-/* Nút quay lại đặc biệt cho trang chi tiết */
-.btn-cancel i {
-    margin-right: 8px;
-}
-
-/* Màu xanh lá cho nút chỉnh sửa nếu bạn muốn dùng */
-.btn-edit-alt {
-    background: var(--primary-green) !important;
+/* --- ĐIỀU CHỈNH TRÊN DI ĐỘNG --- */
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Chuyển thành 1 cột */
+        padding: 20px;
+    }
+    
+    .input-group:nth-child(2),
+    .input-group:nth-child(4) {
+        grid-column: span 1;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-save, .btn-cancel {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
 }

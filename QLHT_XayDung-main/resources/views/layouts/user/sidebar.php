@@ -9,13 +9,16 @@
             <i class="fas fa-home"></i> Tổng quan
         </a>
         <a href="trangchu.php?p=duan" class="nav-link <?php echo ($p == 'vattu') ? 'active' : ''; ?>">
-            <i class="fas fa-boxes"></i> Quản lý dự án
+            <i class="fas fa-boxes"></i> Danh sách dự án
         </a>
         <a href="trangchu.php?p=chuthau" class="nav-link">
             <i class="fas fa-project-diagram"></i> Danh sách chủ thầu
         </a>
+        <a href="trangchu.php?p=dsns" class="nav-link">
+            <i class="fas fa-project-diagram"></i> Danh sách nhân sự
+        </a>
         <a href="trangchu.php?p=thongke" class="nav-link">
-            <i class="fas fa-project-diagram"></i> Thống kê
+            <i class="fas fa-project-diagram"></i> Hồ sơ
         </a>
         <a href="trangchu.php?p=taikhoan" class="nav-link">
             <i class="fas fa-project-diagram"></i> Tài khoản

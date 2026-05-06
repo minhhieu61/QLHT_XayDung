@@ -49,6 +49,18 @@ include __DIR__ . '/../resources/views/layouts/user/sidebar.php';
                 case 'chitietduan':
                     include 'TrangChiTietDuAn.php'; // Khi $p=themduan, trang này sẽ thay thế danh sách dự án
                     break;
+                case 'dsns':
+                    include 'TrangDSNhanSu.php';
+                    break;
+                case 'themnhansu':
+                    include 'Trangthemnhansu.php';
+                    break;
+                case 'themchuthau':
+                    include 'Trangthemchuthau.php';
+                    break;
+                case 'suachuthau':
+                    include 'Trangsuachuthau.php';
+                    break;
                 case 'dashboard':
                 default:
                     include 'Trangtongquat.php';
