@@ -37,8 +37,8 @@ include __DIR__ . '/../resources/views/layouts/user/sidebar.php';
                 case 'chuthau':
                     include 'Trangchuthau.php';
                     break;
-                case 'thongke':
-                    include 'thongke.php';
+                case 'hoso':
+                    include 'Tranghoso.php';
                     break;
                 case 'taikhoan':
                     include 'taikhoan.php';
@@ -54,6 +54,9 @@ include __DIR__ . '/../resources/views/layouts/user/sidebar.php';
                     break;
                 case 'themnhansu':
                     include 'Trangthemnhansu.php';
+                    break;
+                case 'themhoso':
+                    include 'Trangthemhoso.php';
                     break;
                 case 'themchuthau':
                     include 'Trangthemchuthau.php';

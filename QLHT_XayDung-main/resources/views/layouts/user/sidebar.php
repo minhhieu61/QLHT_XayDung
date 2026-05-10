@@ -17,7 +17,7 @@
         <a href="trangchu.php?p=dsns" class="nav-link">
             <i class="fas fa-project-diagram"></i> Danh sách nhân sự
         </a>
-        <a href="trangchu.php?p=thongke" class="nav-link">
+        <a href="trangchu.php?p=hoso" class="nav-link">
             <i class="fas fa-project-diagram"></i> Hồ sơ
         </a>
         <a href="trangchu.php?p=taikhoan" class="nav-link">
