@@ -40,7 +40,7 @@ $result = mysqli_query($conn, $sql);
             <thead>
                 <tr>
                     <th>Tên tài liệu</th>
-                    <th>Trạng thái AI</th>
+                    <th>Độ trùng lập</th>
                     <th>Dự án</th>
                     <th>Ngày tải</th>
                     <th style="text-align: center;">Thao tác</th>
@@ -70,12 +70,6 @@ $result = mysqli_query($conn, $sql);
                     <td><?php echo htmlspecialchars($row['ma_du_an'] ?? 'N/A'); ?></td>
                     <td><?php echo date('d/m/Y', strtotime($row['ngay_tai'])); ?></td>
                     <td class="file-actions">
-                        <a href="trangchu.php?p=xemchitiet&id=<?php echo $row['id']; ?>" class="btn-action btn-view" title="Xem chi tiết">
-                            <i class="fas fa-eye"></i> Xem
-                        </a>
-                        <a href="<?php echo htmlspecialchars($row['duong_dan']); ?>" class="btn-action btn-download" download title="Tải về">
-                            <i class="fas fa-download"></i>
-                        </a>
                         <button class="btn-action btn-del" onclick="confirmDelete(<?php echo $row['id']; ?>)" title="Xóa">
                             <i class="fas fa-trash"></i>
                         </button>

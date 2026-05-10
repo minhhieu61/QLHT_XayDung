@@ -64,6 +64,9 @@ include __DIR__ . '/../resources/views/layouts/user/sidebar.php';
                 case 'suachuthau':
                     include 'Trangsuachuthau.php';
                     break;
+                case 'suanhansu':
+                    include 'Trangsuanhansu.php'; // Trang vừa tạo ở trên
+                    break;
                 case 'dashboard':
                 default:
                     include 'Trangtongquat.php';

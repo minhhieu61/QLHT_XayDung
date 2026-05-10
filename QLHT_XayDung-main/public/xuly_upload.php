@@ -66,14 +66,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             );
             
             if (mysqli_stmt_execute($stmt)) {
-                echo "<script>
-                    alert('Đối soát hoàn tất!\\nKết quả: $ai_status ($ai_score%)');
-                    window.location.href = 'trangchu.php?p=hoso';
-                </script>";
-            } else {
-                unlink($target_file);
-                die("Lỗi SQL: " . mysqli_stmt_error($stmt));
-            }
+            // Thay vì echo, ta lưu kết quả vào SESSION và quay về trang hồ sơ
+            $_SESSION['upload_msg'] = "Tải lên thành công! Tỉ lệ trùng lặp: $ai_score%";
+            $_SESSION['upload_type'] = ($ai_score > 85) ? "danger" : (($ai_score > 50) ? "warning" : "success");
+            
+            header("Location: trangchu.php?p=hoso");
+            exit();
+        } else {
+            $_SESSION['upload_msg'] = "Lỗi CSDL: " . mysqli_stmt_error($stmt);
+            $_SESSION['upload_type'] = "danger";
+            header("Location: trangchu.php?p=hoso");
+            exit();
+        }
         }
     }
 }

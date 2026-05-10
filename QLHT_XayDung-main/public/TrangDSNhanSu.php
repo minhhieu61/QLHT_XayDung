@@ -64,9 +64,6 @@
                     <td><span class="text-bold"><?php echo $row['so_dien_thoai']; ?></span></td>
                     <td>
                         <div class="action-btns">
-                            <a href="trangchu.php?p=chitietnhansu&id=<?php echo $row['id']; ?>" class="btn-circle btn-view" title="Xem">
-                                <i class="fas fa-eye"></i>
-                            </a>
                             <a href="trangchu.php?p=suanhansu&id=<?php echo $row['id']; ?>" class="btn-circle btn-edit" title="Sửa">
                                 <i class="fas fa-pen"></i>
                             </a>

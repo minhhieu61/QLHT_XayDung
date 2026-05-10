@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 06, 2026 lúc 07:24 AM
+-- Thời gian đã tạo: Th5 10, 2026 lúc 11:20 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -220,6 +220,36 @@ INSERT INTO `reports` (`id`, `project_id`, `author_id`, `content`, `created_at`)
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `tai_lieu`
+--
+
+CREATE TABLE `tai_lieu` (
+  `id` int(11) NOT NULL,
+  `ma_du_an` varchar(50) DEFAULT NULL,
+  `ten_tai_lieu` varchar(255) DEFAULT NULL,
+  `loai_tai_lieu` varchar(50) DEFAULT NULL,
+  `duong_dan` varchar(255) DEFAULT NULL,
+  `noi_dung_van_ban` longtext DEFAULT NULL,
+  `hash_noi_dung` varchar(64) DEFAULT NULL,
+  `ai_status` varchar(20) DEFAULT 'Normal',
+  `ai_score` float DEFAULT 0,
+  `ngay_tai` datetime DEFAULT current_timestamp(),
+  `kich_thuoc` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tai_lieu`
+--
+
+INSERT INTO `tai_lieu` (`id`, `ma_du_an`, `ten_tai_lieu`, `loai_tai_lieu`, `duong_dan`, `noi_dung_van_ban`, `hash_noi_dung`, `ai_status`, `ai_score`, `ngay_tai`, `kich_thuoc`) VALUES
+(1, 'Bản vẽ kỷ thuật công trình Khu A', 'BanVeKyThuatKhuB.txt', 'Bản vẽ', 'uploads/1778402447_BanVeKyThuatKhuB.txt', 'BẢN VẼ KỸ THUẬT: HỆ THỐNG ĐIỆN TẦNG 1 - KHU B\\r\\nMã hiệu: BV-VLUTE-B1-01qwq\\r\\nQuy chuẩn: etwetTCVN 9206:2012\\r\\nNội dung: rew\\r\\nVật tư chính: adsadas\\r\\nNgày lập: 08/05/2026. Người lập: KS. DS TIẾN\\r\\n', '2c67a86e2da6116856a82924a1f77a5cd594046e1b3180bcaf23dc05703cd779', 'Normal', 0, '2026-05-10 15:40:47', '0.22 KB'),
+(4, 'Bản vẽ kỷ thuật công trình Khu B', 'a.txt', 'Bản vẽ', 'uploads/1778402664_a.txt', 'aa', '961b6dd3ede3cb8ecbaacbd68de040cd78eb2ed5889130cceb4c49268ea4d506', 'Normal', 0, '2026-05-10 15:44:24', '0 KB'),
+(5, 'Bản vẽ kỷ thuật công trình Khu C', 'BanVeKyThuatKhuB.txt', 'Bản vẽ', 'uploads/1778402681_BanVeKyThuatKhuB.txt', 'BẢN VẼ KỸ THUẬT: HỆ THỐNG ĐIỆN TẦNG 1 - KHU B\\r\\nMã hiệu: BV-VLUTE-B1-01qwq\\r\\nQuy chuẩn: etwetTCVN 9206:2012\\r\\nNội dung: rew\\r\\nVật tư chính: adsadas\\r\\nNgày lập: 08/05/2026. Người lập: KS. DS TIẾN\\r\\n', '2c67a86e2da6116856a82924a1f77a5cd594046e1b3180bcaf23dc05703cd779', 'Duplicate', 100, '2026-05-10 15:44:41', '0.22 KB'),
+(6, 'Bản vẽ kỷ thuật công trình Khu D', 'b.txt', 'Bản vẽ', 'uploads/1778403180_b.txt', 'alo em à nhớ a không', 'bc183998eabdd23d09128fb786204b3ee106a9f80d9ded2c62293e815d4274e5', 'Normal', 20.15, '2026-05-10 15:53:00', '0.02 KB');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `tasks`
 --
 
@@ -299,6 +329,12 @@ ALTER TABLE `reports`
   ADD KEY `project_id` (`project_id`);
 
 --
+-- Chỉ mục cho bảng `tai_lieu`
+--
+ALTER TABLE `tai_lieu`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `tasks`
 --
 ALTER TABLE `tasks`
@@ -356,6 +392,12 @@ ALTER TABLE `projects`
 --
 ALTER TABLE `reports`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `tai_lieu`
+--
+ALTER TABLE `tai_lieu`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `tasks`
