@@ -42,7 +42,7 @@
             
             <div style="margin-top: 30px; display: flex; gap: 10px;">
                 <button type="submit" class="btn-add-ct" style="border:none; cursor:pointer;">LƯU THÔNG TIN</button>
-                <a href="trangchu.php?p=danhsachchuthau" class="btn-delete" style="text-decoration:none; display:inline-block; padding: 10px 20px; border-radius:5px;">HỦY BỎ</a>
+                <a href="trangchu.php?p=chuthau" class="btn-delete" style="text-decoration:none; display:inline-block; padding: 10px 20px; border-radius:5px;">HỦY BỎ</a>
             </div>
         </form>
     </div>

@@ -5,7 +5,7 @@ include 'ketnoi.php';
 // 1. Lấy từ khóa tìm kiếm từ URL
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 
-// 2. Cập nhật truy vấn SQL để lọc theo tên công ty hoặc mã số thầu
+// 2. Cập nhật truy vấn SQL để lọc
 $sql = "SELECT * FROM chuthau 
         WHERE ten_don_vi LIKE '%$search%' 
         OR ma_ct LIKE '%$search%' 
@@ -16,10 +16,43 @@ $result = mysqli_query($conn, $sql);
 ?>
 
 <link rel="stylesheet" href="css/danhsachchuthau.css">
+<style>
+    /* Style bổ sung cho phần tiêu đề giới thiệu màu xanh */
+    .header-top-ql {
+        background: #1e3c72; /* Màu xanh đậm giống ảnh bạn gửi */
+        padding: 25px 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .header-title-ql h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .header-title-ql p {
+        margin: 8px 0 0 0;
+        font-size: 14px;
+        opacity: 0.9;
+        font-weight: 400;
+    }
+</style>
 
 <div class="chuthau-container">
+    <div class="header-top-ql">
+        <div class="header-title-ql">
+            <h1><i class="fas fa-building"></i> QUẢN LÝ ĐƠN VỊ CHỦ THẦU</h1>
+            <p>Danh sách các đối tác, tập đoàn xây dựng và đơn vị thầu phụ đang hợp tác với VLUTE</p>
+        </div>
+    </div>
+
     <div class="chuthau-header">
-        <!-- FORM TÌM KIẾM -->
         <form method="GET" action="trangchu.php" class="search-box">
             <input type="hidden" name="p" value="danhsachchuthau">
             <i class="fas fa-search"></i>
@@ -89,14 +122,13 @@ $result = mysqli_query($conn, $sql);
     </table>
 </div>
 
-<!-- JAVASCRIPT TÌM KIẾM NHANH (LIVE SEARCH) -->
 <script>
+// Giữ nguyên phần JS tìm kiếm của bạn
 document.getElementById('searchInput').addEventListener('keyup', function() {
     let filter = this.value.toLowerCase();
     let rows = document.querySelectorAll('#chuthauTable tbody tr');
 
     rows.forEach(row => {
-        // Lấy toàn bộ văn bản trong dòng (tên, mã, người đại diện)
         let text = row.innerText.toLowerCase();
         if (text.includes(filter)) {
             row.style.display = '';

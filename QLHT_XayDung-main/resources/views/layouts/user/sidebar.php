@@ -1,7 +1,7 @@
 <nav class="side-panel">
     <div class="brand">
         <img src="img/logo.jpg" alt="Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/vi/c/c7/Logo-vlute.png'">
-        <h3>VLUTE CMS</h3>
+        <h3>VLUTE</h3>
     </div>
 
     <nav class="nav-menu">
