@@ -22,13 +22,13 @@
         </a>
 
         <!-- Nhóm: Quản lý nguồn lực -->
-        <a href="manager_dashboard.php?p=vattu_thietbi" class="nav-link <?php echo ($current_page == 'vattu_thietbi') ? 'active' : ''; ?>">
+        <!-- <a href="manager_dashboard.php?p=vattu_thietbi" class="nav-link <?php echo ($current_page == 'vattu_thietbi') ? 'active' : ''; ?>">
             <i class="fas fa-boxes"></i> Kho vật tư & Thiết bị
         </a>
 
         <a href="manager_dashboard.php?p=doi_ngu" class="nav-link <?php echo ($current_page == 'doi_ngu') ? 'active' : ''; ?>">
             <i class="fas fa-users-cog"></i> Đội ngũ thi công
-        </a>
+        </a> -->
 
         <!-- Nhóm: Tài chính & Báo cáo -->
         <a href="manager_dashboard.php?p=baocao_kinhphi" class="nav-link <?php echo ($current_page == 'baocao_kinhphi') ? 'active' : ''; ?>">
