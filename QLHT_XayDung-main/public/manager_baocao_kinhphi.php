@@ -1,3 +1,46 @@
+<?php
+// 1. Cấu hình kết nối Cơ sở dữ liệu bằng MySQLi
+$host = 'localhost';
+$username = 'root';
+$password = '';
+$dbname = 'qlht_xaydung_vlute';
+
+$conn = new mysqli($host, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("Lỗi kết nối cơ sở dữ liệu: " . $conn->connect_error);
+}
+$conn->set_charset("utf8");
+
+// Tính tổng dự toán của toàn bộ dự án
+$total_budget = 0;
+$budget_res = $conn->query("SELECT SUM(tong_kinh_phi) AS total FROM duan");
+if ($budget_res && $row = $budget_res->fetch_assoc()) {
+    $total_budget = floatval($row['total']);
+}
+
+// Tính tổng số tiền thực tế đã chi trả dựa trên tất cả hóa đơn
+$total_spent = 0;
+$spent_res = $conn->query("SELECT SUM(so_tien) AS total FROM hoa_don");
+if ($spent_res && $row = $spent_res->fetch_assoc()) {
+    $total_spent = floatval($row['total']);
+}
+
+// Tính ngân sách còn lại
+$total_remaining = $total_budget - $total_spent;
+
+// TRUY VẤN CHI TIẾT KINH PHÍ TỪNG DỰ ÁN
+$sql_list = "SELECT 
+                d.id, 
+                d.ten_du_an, 
+                d.tong_kinh_phi, 
+                IFNULL(SUM(h.so_tien), 0) AS da_chi
+             FROM duan d
+             LEFT JOIN hoa_don h ON d.id = h.id_du_an
+             GROUP BY d.id
+             ORDER BY d.id DESC";
+$result_list = $conn->query($sql_list);
+?>
+
 <link rel="stylesheet" href="css/manager_baocao_kinhphi.css">
 
 <div class="finance-wrapper">
@@ -12,34 +55,27 @@
         </div>
     </div>
 
-    <div class="finance-summary-grid">
+    <div class="finance-summary-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
         <div class="f-stat-card total">
             <div class="f-info">
                 <label>Tổng dự toán hệ thống</label>
-                <span class="f-value">5.200.000.000đ</span>
+                <span class="f-value"><?php echo number_format($total_budget, 0, ',', '.'); ?>đ</span>
             </div>
             <i class="fas fa-vault"></i>
         </div>
         <div class="f-stat-card spent">
             <div class="f-info">
                 <label>Thực tế đã chi</label>
-                <span class="f-value">3.150.000.000đ</span>
+                <span class="f-value"><?php echo number_format($total_spent, 0, ',', '.'); ?>đ</span>
             </div>
             <i class="fas fa-money-bill-wave"></i>
         </div>
         <div class="f-stat-card remaining">
             <div class="f-info">
                 <label>Ngân sách còn lại</label>
-                <span class="f-value">2.050.000.000đ</span>
+                <span class="f-value"><?php echo number_format($total_remaining, 0, ',', '.'); ?>đ</span>
             </div>
             <i class="fas fa-piggy-bank"></i>
-        </div>
-        <div class="f-stat-card percent">
-            <div class="f-info">
-                <label>Tỉ lệ giải ngân</label>
-                <span class="f-value">60.5%</span>
-            </div>
-            <i class="fas fa-chart-line"></i>
         </div>
     </div>
 
@@ -59,32 +95,55 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><strong>Cải tạo Nhà học Khu A</strong></td>
-                    <td>1.500.000.000đ</td>
-                    <td class="text-bold">1.200.000.000đ</td>
-                    <td>300.000.000đ</td>
-                    <td>
-                        <div class="f-progress-bar">
-                            <div class="f-progress-fill" style="width: 80%"></div>
-                        </div>
-                        <small>80%</small>
-                    </td>
-                    <td><span class="f-badge safe">An toàn</span></td>
-                </tr>
-                <tr class="danger-row">
-                    <td><strong>Sửa chữa KTX VLUTE</strong></td>
-                    <td>500.000.000đ</td>
-                    <td class="text-bold">480.000.000đ</td>
-                    <td class="text-danger">20.000.000đ</td>
-                    <td>
-                        <div class="f-progress-bar">
-                            <div class="f-progress-fill warning" style="width: 96%"></div>
-                        </div>
-                        <small>96%</small>
-                    </td>
-                    <td><span class="f-badge danger">Sắp vượt định mức</span></td>
-                </tr>
+                <?php
+                if ($result_list && $result_list->num_rows > 0):
+                    while ($project = $result_list->fetch_assoc()):
+                        $p_budget = floatval($project['tong_kinh_phi']);
+                        $p_spent = floatval($project['da_chi']);
+                        $p_remaining = $p_budget - $p_spent;
+                        $p_percent = ($p_budget > 0) ? round(($p_spent / $p_budget) * 100, 1) : 0;
+
+                        $rowClass = '';
+                        $barClass = '';
+                        $badgeClass = 'safe';
+                        $badgeText = 'An toàn';
+
+                        if ($p_percent >= 90) {
+                            $rowClass = 'danger-row';
+                            $barClass = 'warning';
+                            $badgeClass = 'danger';
+                            $badgeText = 'Sắp vượt định mức';
+                        } elseif ($p_percent >= 70) {
+                            $badgeClass = 'warning';
+                            $badgeText = 'Cần lưu ý';
+                        }
+                ?>
+                        <tr class="<?php echo $rowClass; ?>">
+                            <td><strong><?php echo htmlspecialchars($project['ten_du_an']); ?></strong></td>
+                            <td><?php echo number_format($p_budget, 0, ',', '.'); ?>đ</td>
+                            <td class="text-bold"><?php echo number_format($p_spent, 0, ',', '.'); ?>đ</td>
+                            <td class="<?php echo ($p_percent >= 90) ? 'text-danger' : ''; ?>">
+                                <?php echo number_format($p_remaining, 0, ',', '.'); ?>đ
+                            </td>
+                            <td>
+                                <div class="f-progress-bar">
+                                    <div class="f-progress-fill <?php echo $barClass; ?>" style="width: <?php echo min($p_percent, 100); ?>%"></div>
+                                </div>
+                                <small><?php echo $p_percent; ?>%</small>
+                            </td>
+                            <td><span class="f-badge <?php echo $badgeClass; ?>"><?php echo $badgeText; ?></span></td>
+                        </tr>
+                    <?php
+                    endwhile;
+                else:
+                    ?>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px; color: #7f8c8d;">Chưa có dữ liệu dự án hợp lệ.</td>
+                    </tr>
+                <?php
+                endif;
+                $conn->close();
+                ?>
             </tbody>
         </table>
     </div>

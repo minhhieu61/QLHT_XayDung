@@ -1,64 +1,20 @@
-<!-- <link rel="stylesheet" href="css/manager_list_duan.css">
-<div class="project-list-container">
-    <div class="list-header">
-        <h2><i class="fas fa-project-diagram"></i> GIÁM SÁT DỰ ÁN</h2>
-
-        <div class="filter-box">
-            <div class="search-wrapper">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Tìm tên dự án, chủ thầu...">
-            </div>
-
-            <select class="status-select" id="statusFilter">
-                <option value="all">Tất cả trạng thái</option>
-                <option value="ongoing">Đang thi công</option>
-                <option value="warning">Trễ hạn</option>
-                <option value="completed">Hoàn thành</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="project-grid" id="projectGrid">
-        <a href="manager_dashboard.php?p=giamsat_duan&id=1" class="project-card" data-status="ongoing">
-            <div class="card-header">
-                <span class="category">Hạ tầng</span>
-                <span class="status-badge ongoing">Đang làm</span>
-            </div>
-            <h3>Cải tạo nhà học Khu A</h3>
-            <div class="card-info">
-                <span><i class="fas fa-user-tie"></i> Võ Minh Hiếu</span>
-                <span><i class="fas fa-calendar-alt"></i> Deadline: 30/06/2026</span>
-            </div>
-            <div class="progress-container">
-                <div class="progress-text"><span>Tiến độ</span><span>70%</span></div>
-                <div class="progress-bar">
-                    <div class="fill" style="width: 70%;"></div>
-                </div>
-            </div>
-        </a>
-
-    </div>
-</div> -->
 <?php
 // 1. Cấu hình kết nối Cơ sở dữ liệu bằng MySQLi
 $host = 'localhost';
-$username = 'root'; // Thay đổi nếu bạn dùng user khác
-$password = '';     // Thay đổi nếu bạn có cài password cho MySQL
+$username = 'root';
+$password = '';
 $dbname = 'qlht_xaydung_vlute';
 
-// Khởi tạo kết nối
 $conn = new mysqli($host, $username, $password, $dbname);
-
-// Kiểm tra kết nối có lỗi không
 if ($conn->connect_error) {
     die("Lỗi kết nối cơ sở dữ liệu: " . $conn->connect_error);
 }
-
-// Cấu hình hiển thị tiếng Việt chuẩn UTF-8
 $conn->set_charset("utf8");
 
-// 2. Truy vấn lấy danh sách dự án
-$sql = "SELECT id, ten_du_an, nguoi_phu_trach_cdt, vi_tri, trang_thai FROM duan ORDER BY id DESC";
+// 2. SỬA LẠI SQL: Lấy thẳng cột nguoi_phu_trach_cdt vì nó đang lưu dạng chữ (Text)
+$sql = "SELECT id, ten_du_an, vi_tri, trang_thai, nguoi_phu_trach_cdt 
+        FROM duan 
+        ORDER BY id DESC";
 $result = $conn->query($sql);
 ?>
 
@@ -75,8 +31,8 @@ $result = $conn->query($sql);
 
             <select class="status-select" id="statusFilter">
                 <option value="all">Tất cả trạng thái</option>
-                <option value="ongoing">Đang thi công</option>
-                <option value="warning">Trễ hạn</option>
+                <option value="ongoing">Đang thực hiện</option>
+                <option value="paused">Tạm dừng</option>
                 <option value="completed">Hoàn thành</option>
             </select>
         </div>
@@ -84,44 +40,42 @@ $result = $conn->query($sql);
 
     <div class="project-grid" id="projectGrid">
         <?php
-        // Kiểm tra xem có dòng dữ liệu nào trả về không
         if ($result && $result->num_rows > 0):
-            // Duyệt qua từng dòng dữ liệu bằng vòng lặp while
             while ($row = $result->fetch_assoc()):
 
-                // Xử lý Class và Text hiển thị cho Badge Trạng thái dựa trên CSDL
+                // Mặc định ban đầu
                 $statusClass = 'ongoing';
-                $statusText = 'Đang làm';
+                $statusText = 'Đang thực hiện';
                 $dataStatus = 'ongoing';
 
-                if ($row['trang_thai'] == 'warning' || $row['trang_thai'] == 'Trễ hạn') {
+                // Kiểm tra điều kiện chuẩn theo 3 trạng thái của bạn
+                if ($row['trang_thai'] == 'Tạm dừng' || $row['trang_thai'] == 'paused') {
                     $statusClass = 'warning';
-                    $statusText = 'Trễ hạn';
-                    $dataStatus = 'warning';
-                } elseif ($row['trang_thai'] == 'completed' || $row['trang_thai'] == 'Hoàn thành') {
+                    $statusText = 'Tạm dừng';
+                    $dataStatus = 'paused';
+                } elseif ($row['trang_thai'] == 'Hoàn thành' || $row['trang_thai'] == 'completed') {
                     $statusClass = 'completed';
                     $statusText = 'Hoàn thành';
                     $dataStatus = 'completed';
                 }
+
+                // SỬA DÒNG NÀY: Đọc trực tiếp biến từ bảng duan
+                $phuTrachText = !empty($row['nguoi_phu_trach_cdt']) ? $row['nguoi_phu_trach_cdt'] : 'Chưa phân công';
         ?>
-                <a href="manager_dashboard.php?p=giamsat_duan&id=<?php echo $row['id']; ?>" class="project-card" data-status="<?php echo $dataStatus; ?>">
+                <a href="manager_dashboard.php?p=giamsat_duan&id=<?php echo $row['id']; ?>"
+                    class="project-card"
+                    data-status="<?php echo $dataStatus; ?>"
+                    data-search-keyword="<?php echo mb_strtolower($row['ten_du_an'] . ' ' . $phuTrachText, 'UTF-8'); ?>">
+
                     <div class="card-header">
-                        <!-- <span class="category">Hạ tầng</span> -->
                         <span class="status-badge <?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
                     </div>
                     <h3><?php echo htmlspecialchars($row['ten_du_an']); ?></h3>
 
                     <div class="card-info">
-                        <span><i class="fas fa-user-tie"></i> <?php echo htmlspecialchars($row['nguoi_phu_trach_cdt']); ?></span>
+                        <span><i class="fas fa-user-tie"></i> <?php echo htmlspecialchars($phuTrachText); ?></span>
                         <span><i class="fas fa-map-marker-alt"></i> Vị trí: <?php echo htmlspecialchars($row['vi_tri']); ?></span>
                     </div>
-
-                    <!-- <div class="progress-container">
-                        <div class="progress-text"><span>Tiến độ</span><span>70%</span></div>
-                        <div class="progress-bar">
-                            <div class="fill" style="width: 70%;"></div>
-                        </div>
-                    </div> -->
                 </a>
             <?php
             endwhile;
@@ -133,10 +87,14 @@ $result = $conn->query($sql);
             </div>
         <?php
         endif;
-        // Đóng kết nối sau khi xử lý xong để giải phóng tài nguyên tài nguyên RAM
         $conn->close();
         ?>
+
+        <div id="noResults" class="no-data" style="display: none; grid-column: 1/-1; text-align: center; padding: 30px; color: #64748b;">
+            <i class="fas fa-search-minus" style="font-size: 40px; margin-bottom: 10px; display: block;"></i>
+            Không tìm thấy dự án nào phù hợp với bộ lọc hiện tại.
+        </div>
     </div>
 </div>
 
-<script src="js/giamsat_duan.js"></script>
+<script src="js/manager_list_duan.js"></script>

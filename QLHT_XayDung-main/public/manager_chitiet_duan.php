@@ -14,8 +14,73 @@ $conn->set_charset("utf8");
 // 2. Lấy ID dự án từ URL định dạng an toàn
 $project_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
+// ==========================================
+// KHỐI LOGIC PHP XỬ LÝ LƯU DỮ LIỆU (ĐẦU TRANG)
+// ==========================================
+
+// A. Xử lý cập nhật Nhân sự & Nhà thầu
+if (isset($_POST['btn_submit_update'])) {
+    $p_id = intval($_POST['project_id']);
+    $npc = $_POST['nguoi_phu_trach_cdt'];
+    $nt = intval($_POST['id_nha_thau']);
+
+    $sql_update = "UPDATE duan SET nguoi_phu_trach_cdt = ?, id_nha_thau = ? WHERE id = ?";
+    $stmt_up = $conn->prepare($sql_update);
+    $stmt_up->bind_param("sii", $npc, $nt, $p_id);
+
+    if ($stmt_up->execute()) {
+        echo "<script>alert('Cập nhật thông tin phân công thành công!'); window.location.href='manager_dashboard.php?p=giamsat_duan&id=" . $p_id . "';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Lỗi hệ thống khi cập nhật: " . addslashes($stmt_up->error) . "');</script>";
+    }
+    $stmt_up->close();
+}
+
+// B. Xử lý cập nhật MÔ TẢ CHI TIẾT DỰ ÁN
+if (isset($_POST['btn_submit_description'])) {
+    $p_id = intval($_POST['project_id']);
+    $mo_ta_moi = trim($_POST['mo_ta']);
+
+    $sql_update_desc = "UPDATE duan SET mo_ta = ? WHERE id = ?";
+    $stmt_desc = $conn->prepare($sql_update_desc);
+    $stmt_desc->bind_param("si", $mo_ta_moi, $p_id);
+
+    if ($stmt_desc->execute()) {
+        echo "<script>alert('Cập nhật mô tả chi tiết dự án thành công!'); window.location.href='manager_dashboard.php?p=giamsat_duan&id=" . $p_id . "';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Lỗi hệ thống khi cập nhật mô tả: " . addslashes($stmt_desc->error) . "');</script>";
+    }
+    $stmt_desc->close();
+}
+
+// C. Xử lý thêm HÓA ĐƠN phát sinh mới
+if (isset($_POST['btn_submit_invoice'])) {
+    $p_id = intval($_POST['project_id']);
+    $ten_chi_phi = trim($_POST['ten_chi_phi']);
+    $so_tien = floatval($_POST['so_tien']);
+    $ngay_thanh_toan = $_POST['ngay_thanh_toan'];
+    $ghi_chu = trim($_POST['ghi_chu']);
+
+    $sql_insert_inv = "INSERT INTO hoa_don (id_du_an, ten_chi_phi, so_tien, ngay_thanh_toan, ghi_chu) VALUES (?, ?, ?, ?, ?)";
+    $stmt_inv_add = $conn->prepare($sql_insert_inv);
+    $stmt_inv_add->bind_param("isdss", $p_id, $ten_chi_phi, $so_tien, $ngay_thanh_toan, $ghi_chu);
+
+    if ($stmt_inv_add->execute()) {
+        echo "<script>alert('Thêm hóa đơn chứng từ mới thành công!'); window.location.href='manager_dashboard.php?p=giamsat_duan&id=" . $p_id . "';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Lỗi hệ thống không thể thêm hóa đơn: " . addslashes($stmt_inv_add->error) . "');</script>";
+    }
+    $stmt_inv_add->close();
+}
+
 // 3. Truy vấn dữ liệu chi tiết của dự án
-$sql_project = "SELECT ten_du_an, ma_da, ngay_tao, trang_thai, vi_tri, nguoi_phu_trach_cdt, id_nha_thau, chu_dau_tu FROM duan WHERE id = ?";
+$sql_project = "SELECT d.*, c.ten_don_vi 
+                FROM duan d 
+                LEFT JOIN chuthau c ON d.id_nha_thau = c.id 
+                WHERE d.id = ?";
 $stmt = $conn->prepare($sql_project);
 $stmt->bind_param("i", $project_id);
 $stmt->execute();
@@ -24,14 +89,28 @@ $result_project = $stmt->get_result();
 if ($result_project->num_rows > 0) {
     $project = $result_project->fetch_assoc();
 } else {
-    die("<div class='project-detail-wrapper'><h3>Không tìm thấy dự án yêu cầu hoặc ID không hợp lệ!</h3></div>");
+    die("<div class='project-detail-wrapper'><h3>Không tìm thấy dự án yêu cầu!</h3></div>");
 }
 
-// 4. Lấy danh sách phục vụ cho danh mục sổ xuống (Select Option) trong Popup
-$users_result = $conn->query("SELECT DISTINCT nguoi_phu_trach_cdt FROM duan WHERE nguoi_phu_trach_cdt IS NOT NULL AND nguoi_phu_trach_cdt != ''");
-$contractors_result = $conn->query("SELECT DISTINCT id_nha_thau FROM duan WHERE id_nha_thau IS NOT NULL AND id_nha_thau != ''");
+// 3.1. Truy vấn danh sách các khoản chi phí/hóa đơn thuộc dự án này
+$sql_invoices = "SELECT * FROM hoa_don WHERE id_du_an = ? ORDER BY ngay_thanh_toan DESC";
+$stmt_inv = $conn->prepare($sql_invoices);
+$stmt_inv->bind_param("i", $project_id);
+$stmt_inv->execute();
+$result_invoices = $stmt_inv->get_result();
 
-// Kiểm tra xem dự án đã được phân công nhân sự hay chưa để đổi tên nút (Thêm / Sửa)
+// Tính toán tổng số tiền thực tế đã chi từ danh sách hóa đơn
+$da_chi = 0;
+$invoices_list = [];
+while ($row = $result_invoices->fetch_assoc()) {
+    $da_chi += $row['so_tien'];
+    $invoices_list[] = $row;
+}
+$con_lai = $project['tong_kinh_phi'] - $da_chi;
+
+// 4. Truy vấn danh sách chuẩn để đổ dữ liệu vào Popup
+$users_result = $conn->query("SELECT DISTINCT ho_ten FROM nhan_su WHERE ho_ten IS NOT NULL AND ho_ten != ''");
+$contractors_result = $conn->query("SELECT id, ten_don_vi FROM chuthau WHERE ten_don_vi IS NOT NULL AND ten_don_vi != ''");
 $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_nha_thau']));
 ?>
 
@@ -50,7 +129,6 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
 
         <div class="header-right-zone">
             <?php
-            // Xử lý badge trạng thái sinh động dựa vào CSDL
             $statusClass = 'badge-ongoing';
             $statusText = htmlspecialchars($project['trang_thai']);
             if ($project['trang_thai'] == 'Trễ hạn' || $project['trang_thai'] == 'warning') $statusClass = 'badge-warning';
@@ -81,8 +159,8 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
         <div class="summary-card">
             <i class="fas fa-building"></i>
             <div>
-                <label>Nhà thầu (ID/Tên)</label>
-                <span><?php echo !empty($project['id_nha_thau']) ? htmlspecialchars($project['id_nha_thau']) : 'Chưa chỉ định'; ?></span>
+                <label>Nhà thầu đảm nhiệm</label>
+                <span><?php echo !empty($project['ten_don_vi']) ? htmlspecialchars($project['ten_don_vi']) : 'Chưa chỉ định'; ?></span>
             </div>
         </div>
         <div class="summary-card">
@@ -101,27 +179,93 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
         </div>
     </div>
 
-    <div class="tabs-container">
-        <div class="tabs-header">
-            <button class="tab-btn active" onclick="openTab(event, 'tong-quan')">Tổng quan</button>
-            <!-- <button class="tab-btn" onclick="openTab(event, 'vattu')">Vật tư & Thiết bị</button> -->
-            <button class="tab-btn" onclick="openTab(event, 'kinh-phi')">Kinh phí & Hóa đơn</button>
+    <div class="tabs-navigation" style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <button class="tab-btn active" onclick="openTab(event, 'tong-quan')">
+            <i class="fas fa-file-alt"></i> Tổng quan & Mô tả
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'kinh-phi')">
+            <i class="fas fa-wallet"></i> Quản lý kinh phí
+        </button>
+    </div>
+
+    <div class="tabs-content">
+        <div id="tong-quan" class="tab-pane active">
+            <div class="tab-card-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3><i class="fas fa-file-alt"></i> Mô tả chi tiết dự án</h3>
+                    <button type="button" onclick="toggleDescModal(true)" style="background: #2980b9; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;">
+                        <i class="fas fa-edit"></i> Chỉnh sửa mô tả
+                    </button>
+                </div>
+                <div class="project-description-text" style="background: #fdfefe; padding: 15px; border: 1px solid #e5e8e8; border-radius: 6px;">
+                    <?php
+                    echo !empty($project['mo_ta'])
+                        ? nl2br(htmlspecialchars($project['mo_ta']))
+                        : '<em style="color:#95a5a6;">Chưa có mô tả chi tiết cho dự án này. Hãy bấm nút phía trên để cập nhật thông tin hệ thống.</em>';
+                    ?>
+                </div>
+            </div>
         </div>
 
-        <div class="tabs-content">
-            <div id="tong-quan" class="tab-pane active">
-                <h3>Mô tả dự án</h3>
-                <p>Dự án tập trung vào việc cải tạo hệ thống điện, sơn sửa lại tường và thay mới thiết bị chiếu sáng tại địa điểm được chỉ định.</p>
-            </div>
+        <div id="kinh-phi" class="tab-pane">
+            <div class="tab-card-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3><i class="fas fa-wallet"></i> Quản lý tài chính dự án</h3>
+                    <button type="button" onclick="toggleInvoiceModal(true)" style="background: #2ecc71; color: #fff; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-plus-circle"></i> Thêm hóa đơn mới
+                    </button>
+                </div>
 
-            <div id="vattu" class="tab-pane">
-                <h3>Danh sách vật tư sử dụng</h3>
-                <p>Dữ liệu vật tư đang được liệt kê từ kho tổng...</p>
-            </div>
+                <div class="finance-summary-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #ebf5fb; padding: 15px; border-radius: 6px; border-left: 5px solid #3498db;">
+                        <label style="display:block; font-size:12px; color:#566573;">Tổng ngân sách dự kiến</label>
+                        <strong style="font-size:18px; color:#2980b9;"><?php echo number_format($project['tong_kinh_phi'], 0, ',', '.'); ?> đ</strong>
+                    </div>
+                    <div style="background: #fdf2e9; padding: 15px; border-radius: 6px; border-left: 5px solid #e67e22;">
+                        <label style="display:block; font-size:12px; color:#566573;">Thực tế đã chi trả</label>
+                        <strong style="font-size:18px; color:#d35400;"><?php echo number_format($da_chi, 0, ',', '.'); ?> đ</strong>
+                    </div>
+                    <div style="background: #e8f8f5; padding: 15px; border-radius: 6px; border-left: 5px solid #2ecc71;">
+                        <label style="display:block; font-size:12px; color:#566573;">Ngân sách còn lại</label>
+                        <strong style="font-size:18px; color:#27ae60;"><?php echo number_format($con_lai, 0, ',', '.'); ?> đ</strong>
+                    </div>
+                </div>
 
-            <div id="kinh-phi" class="tab-pane">
-                <h3>Chi tiết tài chính</h3>
-                <p>Thông báo các khoản chi thực tế và dự phòng...</p>
+                <div class="table-responsive" style="margin-top: 15px;">
+                    <table class="manager-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="background-color: #f2f4f4; border-bottom: 2px solid #bdc3c7;">
+                                <th style="padding: 10px;">STT</th>
+                                <th style="padding: 10px;">Nội dung thanh toán / Hóa đơn</th>
+                                <th style="padding: 10px;">Ngày chi</th>
+                                <th style="padding: 10px; text-align: right;">Số tiền</th>
+                                <th style="padding: 10px;">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (count($invoices_list) > 0): ?>
+                                <?php foreach ($invoices_list as $index => $inv): ?>
+                                    <tr style="border-bottom: 1px solid #eaeded;">
+                                        <td style="padding: 10px;"><?php echo $index + 1; ?></td>
+                                        <td style="padding: 10px; font-weight: 500;"><?php echo htmlspecialchars($inv['ten_chi_phi']); ?></td>
+                                        <td style="padding: 10px;"><?php echo date('d/m/Y', strtotime($inv['ngay_thanh_toan'])); ?></td>
+                                        <td style="padding: 10px; text-align: right; color: #e74c3c; font-weight: bold;">
+                                            -<?php echo number_format($inv['so_tien'], 0, ',', '.'); ?> đ
+                                        </td>
+                                        <td style="padding: 10px; font-size: 13px; color: #7f8c8d;"><?php echo htmlspecialchars($inv['ghi_chu']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" style="padding: 20px; text-align: center; color: #95a5a6;">
+                                        <i class="fas fa-receipt" style="font-size: 24px; display:block; margin-bottom: 5px;"></i>
+                                        Chưa có dữ liệu hóa đơn, chứng từ phát sinh cho dự án này.
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -143,10 +287,11 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
                     <option value="Võ Minh Hiếu" <?php echo ($project['nguoi_phu_trach_cdt'] == 'Võ Minh Hiếu') ? 'selected' : ''; ?>>Võ Minh Hiếu</option>
                     <?php
                     if ($users_result) {
+                        $users_result->data_seek(0);
                         while ($u = $users_result->fetch_assoc()) {
-                            if ($u['nguoi_phu_trach_cdt'] != 'Võ Minh Hiếu') {
-                                $selected = ($project['nguoi_phu_trach_cdt'] == $u['nguoi_phu_trach_cdt']) ? 'selected' : '';
-                                echo "<option value='" . htmlspecialchars($u['nguoi_phu_trach_cdt']) . "' $selected>" . htmlspecialchars($u['nguoi_phu_trach_cdt']) . "</option>";
+                            if ($u['ho_ten'] != 'Võ Minh Hiếu') {
+                                $selected = ($project['nguoi_phu_trach_cdt'] == $u['ho_ten']) ? 'selected' : '';
+                                echo "<option value='" . htmlspecialchars($u['ho_ten']) . "' $selected>" . htmlspecialchars($u['ho_ten']) . "</option>";
                             }
                         }
                     }
@@ -155,17 +300,15 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
             </div>
 
             <div class="form-group">
-                <label for="select_nhathau"><i class="fas fa-handshake"></i> Chọn Đơn vị / ID Nhà thầu:</label>
+                <label for="select_nhathau"><i class="fas fa-handshake"></i> Chọn Đơn vị / Nhà thầu:</label>
                 <select name="id_nha_thau" id="select_nhathau" required>
                     <option value="">-- Chọn nhà thầu --</option>
-                    <option value="Công ty XD Tiền Giang" <?php echo ($project['id_nha_thau'] == 'Công ty XD Tiền Giang') ? 'selected' : ''; ?>>Công ty XD Tiền Giang</option>
                     <?php
                     if ($contractors_result) {
+                        $contractors_result->data_seek(0);
                         while ($c = $contractors_result->fetch_assoc()) {
-                            if ($c['id_nha_thau'] != 'Công ty XD Tiền Giang') {
-                                $selected = ($project['id_nha_thau'] == $c['id_nha_thau']) ? 'selected' : '';
-                                echo "<option value='" . htmlspecialchars($c['id_nha_thau']) . "' $selected>" . htmlspecialchars($c['id_nha_thau']) . "</option>";
-                            }
+                            $selected = ($project['id_nha_thau'] == $c['id']) ? 'selected' : '';
+                            echo "<option value='" . intval($c['id']) . "' $selected>" . htmlspecialchars($c['ten_don_vi']) . "</option>";
                         }
                     }
                     ?>
@@ -180,37 +323,65 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
     </div>
 </div>
 
-<?php
-// 5. Logic xử lý lưu dữ liệu (Gửi POST về chính trang hiện tại)
-if (isset($_POST['btn_submit_update'])) {
-    $p_id = intval($_POST['project_id']);
-    $npc = $_POST['nguoi_phu_trach_cdt'];
-    $nt = $_POST['id_nha_thau'];
+<div class="modal-overlay" id="descriptionModal">
+    <div class="modal-box" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-edit"></i> Chỉnh sửa mô tả chi tiết</h3>
+            <span class="close-modal" onclick="toggleDescModal(false)">&times;</span>
+        </div>
+        <form action="" method="POST">
+            <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
 
-    $sql_update = "UPDATE duan SET nguoi_phu_trach_cdt = ?, id_nha_thau = ? WHERE id = ?";
-    $stmt_up = $conn->prepare($sql_update);
-    $stmt_up->bind_param("ssi", $npc, $nt, $p_id);
+            <div class="form-group">
+                <label style="font-weight: bold; margin-bottom: 8px; display: block;">Nội dung mô tả dự án:</label>
+                <textarea name="mo_ta" rows="10" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; font-size: 14px; resize: vertical;" placeholder="Nhập quy mô công trình, tiến độ thi công, hạng mục chi tiết..."><?php echo htmlspecialchars($project['mo_ta'] ?? ''); ?></textarea>
+            </div>
 
-    if ($stmt_up->execute()) {
-        echo "<script>alert('Cập nhật thông tin phân công thành công!'); window.location.href='manager_dashboard.php?p=giamsat_duan&id=" . $p_id . "';</script>";
-    } else {
-        echo "<script>alert('Lỗi hệ thống! Vui lòng thử lại.');</script>";
-    }
-    $stmt_up->close();
-}
-$conn->close();
-?>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="toggleDescModal(false)">Hủy bỏ</button>
+                <button type="submit" name="btn_submit_description" class="btn-submit" style="background-color: #2980b9;">Lưu thay đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="invoiceModal">
+    <div class="modal-box" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-receipt"></i> Thêm hóa đơn phát sinh mới</h3>
+            <span class="close-modal" onclick="toggleInvoiceModal(false)">&times;</span>
+        </div>
+        <form action="" method="POST">
+            <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display:block; font-weight: 500; margin-bottom: 5px;"><i class="fas fa-shopping-cart"></i> Nội dung thanh toán / Tên chi phí:</label>
+                <input type="text" name="ten_chi_phi" style="width:100%; padding: 8px; border: 1px solid #ccc; border-radius:4px;" placeholder="Ví dụ: Mua vật tư cát đá, Trả tiền nhân công đợt 1..." required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display:block; font-weight: 500; margin-bottom: 5px;"><i class="fas fa-money-bill-alt"></i> Số tiền thanh toán (VNĐ):</label>
+                <input type="number" name="so_tien" min="1000" style="width:100%; padding: 8px; border: 1px solid #ccc; border-radius:4px;" placeholder="Nhập số tiền thực tế..." required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display:block; font-weight: 500; margin-bottom: 5px;"><i class="fas fa-calendar-alt"></i> Ngày thanh toán:</label>
+                <input type="date" name="ngay_thanh_toan" value="<?php echo date('Y-m-d'); ?>" style="width:100%; padding: 8px; border: 1px solid #ccc; border-radius:4px;" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display:block; font-weight: 500; margin-bottom: 5px;"><i class="fas fa-comment-alt"></i> Ghi chú:</label>
+                <input type="text" name="ghi_chu" style="width:100%; padding: 8px; border: 1px solid #ccc; border-radius:4px;" placeholder="Đơn vị cung cấp, số xe chứng từ...">
+            </div>
+
+            <div class="modal-footer" style="text-align:right; border-top: 1px solid #eee; padding-top:15px; margin-top:15px;">
+                <button type="button" class="btn-cancel" onclick="toggleInvoiceModal(false)">Hủy bỏ</button>
+                <button type="submit" name="btn_submit_invoice" class="btn-submit" style="background-color: #2ecc71;">Xác nhận lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php $conn->close(); ?>
 
 <script src="js/manager_chitiet_duan.js"></script>
-
-<script>
-    // Hàm thực hiện đóng và mở Popup mềm mại thông qua Class CSS
-    function toggleModal(show) {
-        const modal = document.getElementById('assignmentModal');
-        if (show) {
-            modal.classList.add('open');
-        } else {
-            modal.classList.remove('open');
-        }
-    }
-</script>
