@@ -18,18 +18,21 @@ $project_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 // KHỐI LOGIC PHP XỬ LÝ LƯU DỮ LIỆU (ĐẦU TRANG)
 // ==========================================
 
-// A. Xử lý cập nhật Nhân sự & Nhà thầu
+// A. Xử lý cập nhật Nhân sự, Nhà thầu, TỔNG KINH PHÍ & TRẠNG THÁI DỰ ÁN
 if (isset($_POST['btn_submit_update'])) {
     $p_id = intval($_POST['project_id']);
     $npc = $_POST['nguoi_phu_trach_cdt'];
     $nt = intval($_POST['id_nha_thau']);
+    $kp = floatval($_POST['tong_kinh_phi']);
+    $tt = trim($_POST['trang_thai']); // Lấy trạng thái mới từ form
 
-    $sql_update = "UPDATE duan SET nguoi_phu_trach_cdt = ?, id_nha_thau = ? WHERE id = ?";
+    // Thêm trường trang_thai vào câu lệnh UPDATE
+    $sql_update = "UPDATE duan SET nguoi_phu_trach_cdt = ?, id_nha_thau = ?, tong_kinh_phi = ?, trang_thai = ? WHERE id = ?";
     $stmt_up = $conn->prepare($sql_update);
-    $stmt_up->bind_param("sii", $npc, $nt, $p_id);
+    $stmt_up->bind_param("siisi", $npc, $nt, $kp, $tt, $p_id);
 
     if ($stmt_up->execute()) {
-        echo "<script>alert('Cập nhật thông tin phân công thành công!'); window.location.href='manager_dashboard.php?p=giamsat_duan&id=" . $p_id . "';</script>";
+        echo "<script>alert('Cập nhật thông tin phân công, kinh phí và trạng thái thành công!'); window.location.href='manager_dashboard.php?p=giamsat_duan&id=" . $p_id . "';</script>";
         exit;
     } else {
         echo "<script>alert('Lỗi hệ thống khi cập nhật: " . addslashes($stmt_up->error) . "');</script>";
@@ -130,7 +133,7 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
         <div class="header-right-zone">
             <?php
             $statusClass = 'badge-ongoing';
-            $statusText = htmlspecialchars($project['trang_thai']);
+            $statusText = htmlspecialchars($project['trang_thai'] ?: 'Đang thực hiện');
             if ($project['trang_thai'] == 'Trễ hạn' || $project['trang_thai'] == 'warning') $statusClass = 'badge-warning';
             if ($project['trang_thai'] == 'Hoàn thành' || $project['trang_thai'] == 'completed') $statusClass = 'badge-completed';
             ?>
@@ -138,11 +141,11 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
 
             <?php if ($is_assigned): ?>
                 <button class="btn-open-popup btn-edit-assignment" onclick="toggleModal(true)">
-                    <i class="fas fa-user-edit"></i> Sửa nhân sự / Thầu
+                    <i class="fas fa-user-edit"></i> Sửa nhân sự / Thầu / Kinh phí / Trạng thái
                 </button>
             <?php else: ?>
                 <button class="btn-open-popup" onclick="toggleModal(true)">
-                    <i class="fas fa-user-plus"></i> Chỉ định nhân sự / Thầu
+                    <i class="fas fa-user-plus"></i> Chỉ định nhân sự / Thầu / Kinh phí / Trạng thái
                 </button>
             <?php endif; ?>
         </div>
@@ -170,11 +173,11 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
                 <span><?php echo !empty($project['chu_dau_tu']) ? htmlspecialchars($project['chu_dau_tu']) : 'VLUTE'; ?></span>
             </div>
         </div>
-        <div class="summary-card deadline-card">
-            <i class="fas fa-calendar-check"></i>
+        <div class="summary-card">
+            <i class="fas fa-money-check-alt" style="color: #2980b9;"></i>
             <div>
-                <label>Hoàn thành dự kiến</label>
-                <span class="text-danger">30/06/2026</span>
+                <label>Tổng ngân sách dự kiến</label>
+                <span style="color: #2980b9; font-weight: bold;"><?php echo number_format($project['tong_kinh_phi'], 0, ',', '.'); ?> đ</span>
             </div>
         </div>
     </div>
@@ -271,10 +274,11 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
     </div>
 </div>
 
+<!-- MODAL PHÂN CÔNG (BỔ SUNG THÊM LỰA CHỌN TRẠNG THÁI DỰ ÁN) -->
 <div class="modal-overlay" id="assignmentModal">
     <div class="modal-box">
         <div class="modal-header">
-            <h3><i class="fas fa-user-edit"></i> <?php echo $is_assigned ? 'Cập nhật phân công' : 'Chỉ định nhân sự & Nhà thầu'; ?></h3>
+            <h3><i class="fas fa-user-edit"></i> <?php echo $is_assigned ? 'Cập nhật phân công, Kinh phí & Trạng thái' : 'Chỉ định nhân sự, Nhà thầu & Trạng thái'; ?></h3>
             <span class="close-modal" onclick="toggleModal(false)">&times;</span>
         </div>
         <form action="" method="POST">
@@ -314,6 +318,23 @@ $is_assigned = (!empty($project['nguoi_phu_trach_cdt']) || !empty($project['id_n
                     ?>
                 </select>
             </div>
+
+            <!-- PHẦN CHỈNH SỬA TRẠNG THÁI DỰ ÁN MỚI THÊM VÀO ĐÂY -->
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="trang_thai"><i class="fas fa-tasks"></i> Trạng thái dự án:</label>
+                <select name="trang_thai" id="trang_thai" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-weight: 500;" required>
+                    <option value="Đang thực hiện" <?php echo ($project['trang_thai'] == 'Đang thực hiện' || $project['trang_thai'] == 'ongoing') ? 'selected' : ''; ?>>Đang thực hiện</option>
+                    <option value="Trễ hạn" <?php echo ($project['trang_thai'] == 'Trễ hạn' || $project['trang_thai'] == 'warning') ? 'selected' : ''; ?>>Trễ hạn</option>
+                    <option value="Hoàn thành" <?php echo ($project['trang_thai'] == 'Hoàn thành' || $project['trang_thai'] == 'completed') ? 'selected' : ''; ?>>Hoàn thành</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="tong_kinh_phi"><i class="fas fa-money-check-alt"></i> Tổng ngân sách dự toán (VNĐ):</label>
+                <input type="number" name="tong_kinh_phi" id="tong_kinh_phi" value="<?php echo htmlspecialchars($project['tong_kinh_phi']); ?>" min="0" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; color: #2980b9;" required>
+            </div>
+
+
 
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="toggleModal(false)">Hủy bỏ</button>

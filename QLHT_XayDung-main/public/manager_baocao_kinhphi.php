@@ -50,8 +50,11 @@ $result_list = $conn->query($sql_list);
             <p>Theo dõi dòng tiền và đối soát hóa đơn các công trình</p>
         </div>
         <div class="header-actions">
-            <button class="btn-secondary"><i class="fas fa-filter"></i> Lọc ngày</button>
-            <button class="btn-primary"><i class="fas fa-file-export"></i> Xuất Báo cáo PDF</button>
+            <!-- <button class="btn-secondary"><i class="fas fa-filter"></i> Lọc ngày</button> -->
+
+            <a href="export_all_kinhphi.php" target="_blank" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fas fa-file-export"></i> Xuất Báo cáo PDF
+            </a>
         </div>
     </div>
 
@@ -90,7 +93,6 @@ $result_list = $conn->query($sql_list);
                     <th>Tổng dự toán</th>
                     <th>Đã chi</th>
                     <th>Còn lại</th>
-                    <th>Tiến độ chi</th>
                     <th>Trạng thái</th>
                 </tr>
             </thead>
@@ -104,13 +106,11 @@ $result_list = $conn->query($sql_list);
                         $p_percent = ($p_budget > 0) ? round(($p_spent / $p_budget) * 100, 1) : 0;
 
                         $rowClass = '';
-                        $barClass = '';
                         $badgeClass = 'safe';
                         $badgeText = 'An toàn';
 
                         if ($p_percent >= 90) {
                             $rowClass = 'danger-row';
-                            $barClass = 'warning';
                             $badgeClass = 'danger';
                             $badgeText = 'Sắp vượt định mức';
                         } elseif ($p_percent >= 70) {
@@ -125,12 +125,6 @@ $result_list = $conn->query($sql_list);
                             <td class="<?php echo ($p_percent >= 90) ? 'text-danger' : ''; ?>">
                                 <?php echo number_format($p_remaining, 0, ',', '.'); ?>đ
                             </td>
-                            <td>
-                                <div class="f-progress-bar">
-                                    <div class="f-progress-fill <?php echo $barClass; ?>" style="width: <?php echo min($p_percent, 100); ?>%"></div>
-                                </div>
-                                <small><?php echo $p_percent; ?>%</small>
-                            </td>
                             <td><span class="f-badge <?php echo $badgeClass; ?>"><?php echo $badgeText; ?></span></td>
                         </tr>
                     <?php
@@ -138,7 +132,7 @@ $result_list = $conn->query($sql_list);
                 else:
                     ?>
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px; color: #7f8c8d;">Chưa có dữ liệu dự án hợp lệ.</td>
+                        <td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Chưa có dữ liệu dự án hợp lệ.</td>
                     </tr>
                 <?php
                 endif;

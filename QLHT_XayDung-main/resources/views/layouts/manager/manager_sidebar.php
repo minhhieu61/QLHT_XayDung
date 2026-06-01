@@ -33,9 +33,10 @@
         <!-- Nhóm: Tài chính & Báo cáo -->
         <a href="manager_dashboard.php?p=baocao_kinhphi" class="nav-link <?php echo ($current_page == 'baocao_kinhphi') ? 'active' : ''; ?>">
             <i class="fas fa-file-invoice-dollar"></i> Báo cáo kinh phí
-        </a><!-- Nhóm: Lưu trữ hồ sơ -->
+        </a>
+        <!-- Nhóm: Lưu trữ hồ sơ -->
         <a href="manager_dashboard.php?p=luutru_hoso" class="nav-link <?php echo ($current_page == 'luutru_hoso') ? 'active' : ''; ?>">
-            <i class="fas fa-archive"></i> Lưu trữ hồ sơ
+            <i class="fas fa-archive"></i> Quản lý hồ sơ
         </a>
     </nav>
 
