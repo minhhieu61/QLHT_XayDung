@@ -35,9 +35,9 @@
             <i class="fas fa-file-invoice-dollar"></i> Báo cáo kinh phí
         </a>
         <!-- Nhóm: Lưu trữ hồ sơ -->
-        <a href="manager_dashboard.php?p=luutru_hoso" class="nav-link <?php echo ($current_page == 'luutru_hoso') ? 'active' : ''; ?>">
+        <!-- <a href="manager_dashboard.php?p=luutru_hoso" class="nav-link <?php echo ($current_page == 'luutru_hoso') ? 'active' : ''; ?>">
             <i class="fas fa-archive"></i> Quản lý hồ sơ
-        </a>
+        </a> -->
     </nav>
 
     <!-- Thông tin người dùng (Đã đồng bộ CSS với trangchu) -->
