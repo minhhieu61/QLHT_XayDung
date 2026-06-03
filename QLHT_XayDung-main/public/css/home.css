@@ -112,7 +112,18 @@ body {
 .nut-trang-chu {
   background: var(--xanh-la);
 }
+.nut-dang-nhap {
+  background: white !important;
+  color: var(--xanh-duong) !important;
+  padding: 8px 20px !important;
+  margin: 5px 0 5px 10px;
+  border-radius: 4px;
+}
 
+.nut-dang-nhap:hover {
+  background: var(--xanh-la) !important;
+  color: white !important;
+}
 .nut-dang-ky {
   background: white !important;
   color: var(--xanh-duong) !important;

@@ -114,7 +114,7 @@ function formatActivityTime($datetime_str)
         <div class="dashboard-col main-col">
             <div class="card-box">
                 <div class="card-header">
-                    <h3>Dự án trọng điểm</h3>
+                    <h3>Dự án gần đây</h3>
                     <a href="manager_dashboard.php?p=giamsat_duan" class="btn-link">Xem tất cả</a>
                 </div>
                 <div class="project-mini-list">

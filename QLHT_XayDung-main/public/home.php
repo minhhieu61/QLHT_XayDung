@@ -36,7 +36,7 @@ if (isset($_SESSION['user'])) {
         <div class="khung-dieu-huong">
             <div class="nhom-trai">
                 <!-- Sửa lại link về chính trang home.php -->
-                <a href="home.php" class="nut nut-trang-chu">Trang Chủ</a>
+                <!-- <a href="home.php" class="nut nut-trang-chu">Trang Chủ</a> -->
             </div>
             <div class="nhom-phai">
                 <a href="dangnhap.php" class="nut nut-dang-nhap">Đăng Nhập</a>
@@ -69,12 +69,12 @@ if (isset($_SESSION['user'])) {
         <div class="the-thong-tin">
             <span class="bieu-tuong">📊</span>
             <h3>Tiến Độ & Giám Sát</h3>
-            <p>Cập nhật trạng thái thực hiện, thời gian bắt đầu và dự kiến hoàn thành công trình.</p>
+            <p>Cập nhật trạng thái thực hiện, thời gian bắt đầu công trình.</p>
         </div>
         <div class="the-thong-tin">
             <span class="bieu-tuong">👷</span>
             <h3>Nhân Lực & Vật Tư</h3>
-            <p>Quản lý đội ngũ thi công và nguồn lực vật tư cho từng hạng mục xây dựng cụ thể.</p>
+            <p>Quản lý từng công trình xây dựng cụ thể.</p>
         </div>
     </main>
 
